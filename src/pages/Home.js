@@ -1,21 +1,17 @@
-import { Link } from 'react-router-dom';
 import '../styles/home.css';
 
-const Home = () => {
+export default function Home() {
   return (
-    <div className="home-container">
-      <h1 className="home-title">Welcome to FitGenie</h1>
-      <p className="home-description">
-        Your personalized workout planner and tracker. Log workouts, get exercise suggestions, and track your progress.
-      </p>
-
-      <div className="home-buttons">
-        <Link to="/register" className="home-btn primary-btn">Get Started</Link>
-        <Link to="/login" className="home-btn secondary-btn">Log In</Link>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold">Welcome to Your Workout App</h1>
+        <p className="text-gray-600">Track your progress and stay strong!</p>
+        <button
+          className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+        >
+          Log In
+        </button>
       </div>
     </div>
   );
-};
-
-export default Home;
-
+}
