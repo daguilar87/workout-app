@@ -4,10 +4,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
       <>
+      <Toaster position="top-right" reverseOrder={false} />
       <Navbar/>
       <Routes>
         <Route path="/" element={<Home />} />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast'
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,14 +10,19 @@ export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
+ 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard'); // redirect on success
-    } catch (err) {
-      setError(err.message);
-    }
+  e.preventDefault();
+  setError('');
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    toast.success('Login successful!');
+    navigate('/dashboard');
+  } catch (err) {
+    setError(err.message);
+    toast.error('Login failed');
+  }
   };
 
   return (
