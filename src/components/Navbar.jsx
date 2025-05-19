@@ -68,7 +68,7 @@ const Navbar = () => {
               {user && (
                 <>
                   <li><Link to="/workouts" onClick={closeDropdown}>Workouts</Link></li>
-                  <li><Link to="/profile" onClick={closeDropdown}>Profile</Link></li>
+                  <li><Link to="/Dashboard" onClick={closeDropdown}>Dashboard</Link></li>
                   <li><button onClick={() => { handleLogout(); closeDropdown(); }}>Logout</button></li>
                 </>
               )}
