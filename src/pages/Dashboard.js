@@ -1,49 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        navigate('/login');
-      }
-    });
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      toast.success('Signed out successfully!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Error signing out');
+      console.error(error);
+    }
+  };
 
-    return () => unsubscribe();
-  }, [navigate]);
-
-    const handleSignOut = async () => {
-        try {
-    await signOut(auth);
-    toast.success('Signed out successfully!');
-    navigate('/');
-  } catch (error) {
-    console.error('Sign out error:', error);
-    toast.error('Failed to sign out');
-  }
-};
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h2>
-        {user && (
-          <p className="text-gray-700 mb-6">Logged in as <strong>{user.email}</strong></p>
-        )}
-        <button
-          onClick={handleSignOut}
-          className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
-        >
-          Sign Out
-        </button>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Welcome to Your Dashboard</h1>
+          <button
+            onClick={handleSignOut}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Sign Out
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card title="Log a Workout" onClick={() => navigate('/log')} />
+          <Card title="View Workouts" onClick={() => navigate('/workouts')} />
+          <Card title="Exercise Suggestions" onClick={() => navigate('/suggestions')} />
+          <Card title="Progress Chart" onClick={() => navigate('/progress')} />
+          <Card title="Workout Calendar" onClick={() => navigate('/calendar')} />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function Card({ title, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="cursor-pointer p-6 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-105 transition"
+    >
+      <h2 className="text-xl font-semibold text-center">{title}</h2>
     </div>
   );
 }
