@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast'
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
- 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setError('');
+    e.preventDefault();
+    setError(null);
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    toast.success('Login successful!');
-    navigate('/dashboard');
-  } catch (err) {
-    setError(err.message);
-    toast.error('Login failed');
-  }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Login successful!');
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+      toast.error('Login failed');
+    }
   };
 
   return (
@@ -33,17 +42,21 @@ export default function Login() {
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
+            name="email"
             placeholder="Email"
             className="w-full px-4 py-2 border rounded-lg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="password"
+            name="password"
             placeholder="Password"
             className="w-full px-4 py-2 border rounded-lg"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <button
             type="submit"

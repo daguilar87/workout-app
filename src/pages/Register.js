@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import toast from 'react-hot-toast';
-
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -11,19 +10,29 @@ export default function Register() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
 
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    toast.success('Registration successful!');
-    navigate('/dashboard');
-  } catch (err) {
-    setError(err.message);
-    toast.error('Registration failed');
-  }
-};
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast.success('Registration successful!');
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+      toast.error('Registration failed');
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
