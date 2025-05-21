@@ -32,8 +32,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card title="Log a Workout" onClick={() => navigate('/log-workout')} />
-          <Card title="View Workouts" onClick={() => navigate('/workoutlist')} />
+          <Card title="Log a Workout" onClick={() => navigate('/workouttracker')} />
           <Card title="Exercise Suggestions" onClick={() => navigate('/suggestions')} />
           <Card title="Progress Chart" onClick={() => navigate('/progress')} />
           <Card title="Workout Calendar" onClick={() => navigate('/calendar')} />
