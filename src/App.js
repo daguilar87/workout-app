@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 import WorkoutTracker from './components/WorkoutTracker'
+import Suggestions from './components/Suggestions';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/workouttracker" element={<WorkoutTracker />} />
+        <Route path="/suggestions" element={<Suggestions />} />
       </Routes>
       </>
   );
