@@ -14,6 +14,8 @@ export default function Suggestions() {
   const [suggestion, setSuggestion] = useState(null);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [reps, setReps] = useState('');
+  const [sets, setSets] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
@@ -43,6 +45,8 @@ export default function Suggestions() {
       const data = await response.json();
       const randomExercise = data[Math.floor(Math.random() * data.length)];
       setSuggestion(randomExercise);
+      setReps('');
+      setSets('');
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch suggestion');
@@ -53,17 +57,25 @@ export default function Suggestions() {
 
   const saveSuggestion = async () => {
     if (!userId || !suggestion) return;
+    if (!reps || !sets) {
+      toast.error('Please enter reps and sets');
+      return;
+    }
 
     try {
       await addDoc(collection(db, 'workouts'), {
         name: suggestion.name,
-        reps: 'N/A',
-        sets: 'N/A',
+        reps,
+        sets,
+        equipment: suggestion.equipment || 'N/A',
         date: new Date().toISOString().slice(0, 10),
         userId,
         timestamp: new Date()
       });
       toast.success('Suggested workout added!');
+      setSuggestion(null);
+      setReps('');
+      setSets('');
     } catch (err) {
       toast.error('Failed to save workout');
       console.error(err);
@@ -94,11 +106,27 @@ export default function Suggestions() {
       </button>
 
       {suggestion && (
-        <div className="border p-4 rounded mt-4 bg-gray-50">
+        <div className="border p-4 rounded mt-4 bg-gray-50 space-y-2">
           <p><strong>Name:</strong> {suggestion.name}</p>
           <p><strong>Target:</strong> {suggestion.target}</p>
           <p><strong>Equipment:</strong> {suggestion.equipment}</p>
           <p><strong>Body Part:</strong> {suggestion.bodyPart}</p>
+
+          <input
+            type="number"
+            value={reps}
+            onChange={(e) => setReps(e.target.value)}
+            placeholder="Reps"
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="number"
+            value={sets}
+            onChange={(e) => setSets(e.target.value)}
+            placeholder="Sets"
+            className="w-full border p-2 rounded"
+          />
+
           <button
             onClick={saveSuggestion}
             className="mt-2 btn bg-green-600 text-white w-full"
