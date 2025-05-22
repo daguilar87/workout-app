@@ -14,10 +14,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 import toast from 'react-hot-toast';
 
 export default function WorkoutTracker() {
-  const [formData, setFormData] = useState({ name: '', reps: '', sets: '', date: '' });
+  const [formData, setFormData] = useState({ name: '', reps: '', sets: '', equipment: '', date: '' });
   const [workouts, setWorkouts] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({ name: '', reps: '', sets: '', date: '' });
+  const [editData, setEditData] = useState({ name: '', reps: '', sets: '', equipment: '', date: '' });
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function WorkoutTracker() {
         timestamp: new Date(),
       });
       toast.success('Workout saved!');
-      setFormData({ name: '', reps: '', sets: '', date: '' });
+      setFormData({ name: '', reps: '', sets: '', equipment: '', date: '' });
     } catch (err) {
       toast.error('Failed to save workout');
       console.error(err);
@@ -73,7 +73,13 @@ export default function WorkoutTracker() {
 
   const handleEdit = (workout) => {
     setEditingId(workout.id);
-    setEditData({ name: workout.name, reps: workout.reps, sets: workout.sets, date: workout.date });
+    setEditData({
+      name: workout.name,
+      reps: workout.reps,
+      sets: workout.sets,
+      equipment: workout.equipment || '',
+      date: workout.date,
+    });
   };
 
   const handleEditChange = (e) => {
@@ -85,7 +91,7 @@ export default function WorkoutTracker() {
       await updateDoc(doc(db, 'workouts', editingId), editData);
       toast.success('Workout updated!');
       setEditingId(null);
-      setEditData({ name: '', reps: '', sets: '', date: '' });
+      setEditData({ name: '', reps: '', sets: '', equipment: '', date: '' });
     } catch (err) {
       toast.error('Failed to update workout');
       console.error(err);
@@ -99,6 +105,7 @@ export default function WorkoutTracker() {
         <input name="name" value={formData.name} onChange={handleChange} placeholder="Exercise name" required className="w-full border p-2 rounded" />
         <input name="reps" value={formData.reps} onChange={handleChange} placeholder="Reps" required className="w-full border p-2 rounded" />
         <input name="sets" value={formData.sets} onChange={handleChange} placeholder="Sets" required className="w-full border p-2 rounded" />
+        <input name="equipment" value={formData.equipment} onChange={handleChange} placeholder="Equipment used" className="w-full border p-2 rounded" />
         <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full border p-2 rounded" />
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Save Workout</button>
       </form>
@@ -113,6 +120,7 @@ export default function WorkoutTracker() {
                 <input name="name" value={editData.name} onChange={handleEditChange} className="w-full border p-2 rounded" />
                 <input name="reps" value={editData.reps} onChange={handleEditChange} className="w-full border p-2 rounded" />
                 <input name="sets" value={editData.sets} onChange={handleEditChange} className="w-full border p-2 rounded" />
+                <input name="equipment" value={editData.equipment} onChange={handleEditChange} className="w-full border p-2 rounded" />
                 <input type="date" name="date" value={editData.date} onChange={handleEditChange} className="w-full border p-2 rounded" />
                 <div className="flex space-x-2">
                   <button onClick={handleSaveEdit} className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600">Save</button>
@@ -124,6 +132,7 @@ export default function WorkoutTracker() {
                 <p><strong>Exercise:</strong> {workout.name}</p>
                 <p><strong>Reps:</strong> {workout.reps}</p>
                 <p><strong>Sets:</strong> {workout.sets}</p>
+                <p><strong>Equipment:</strong> {workout.equipment || 'N/A'}</p>
                 <p><strong>Date:</strong> {workout.date}</p>
                 <div className="flex space-x-2 mt-2">
                   <button onClick={() => handleEdit(workout)} className="bg-yellow-400 text-white px-4 py-1 rounded hover:bg-yellow-500">Edit</button>

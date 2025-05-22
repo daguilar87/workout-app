@@ -63,7 +63,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <li><Link to="/workouts" onClick={closeDropdown}>Workouts</Link></li>
+                  <li><Link to="/workouttracker" onClick={closeDropdown}>Workouts</Link></li>
                   <li><Link to="/dashboard" onClick={closeDropdown}>Dashboard</Link></li>
                   <li><button onClick={() => { handleLogout(); closeDropdown(); }}>Logout</button></li>
                 </>
