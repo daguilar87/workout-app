@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import toast from 'react-hot-toast';
@@ -7,7 +7,10 @@ import Avatar from 'react-avatar';
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const avatarRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -16,83 +19,96 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (avatarRef.current && !avatarRef.current.contains(e.target)) {
+        setAvatarDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleLogout = async () => {
     await signOut(auth);
     toast.success('Logged out successfully!');
+    navigate('/');
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen((prev) => !prev);
-  };
+return (
+  <nav className="bg-white shadow-md px-4 relative">
+    <div className="flex items-center justify-between h-16 relative">
 
-  const closeDropdown = () => {
-    setDropdownOpen(false);
-  };
+      
+      <button
+        className="md:hidden focus:outline-none"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      >
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2"
+          viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
 
-  return (
-    <div className="bg-base-100 shadow-md px-4">
-      <div className="flex items-center justify-between h-16 relative">
+      
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+        <Link to="/" className="text-xl font-bold text-blue-600">Workout App</Link>
+      </div>
 
-        <div className="relative">
-          <button onClick={toggleDropdown} className="btn btn-ghost btn-circle">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+      
+      <div className="hidden md:flex items-center gap-4 ml-auto">
+        {!user ? (
+          <>
+            <Link to="/login" className="text-sm font-medium text-blue-600 hover:underline">Login</Link>
+            <Link to="/register" className="text-sm font-medium text-blue-600 hover:underline">Register</Link>
+          </>
+        ) : (
+          <div className="relative" ref={avatarRef}>
+            <button
+              onClick={() => setAvatarDropdownOpen(!avatarDropdownOpen)}
+              className="flex items-center gap-2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-          </button>
-
-          <div
-            className={`absolute z-50 left-0 mt-2 w-52 rounded-md shadow-lg bg-white transform transition-all duration-300 origin-top ${
-              dropdownOpen
-                ? 'opacity-100 scale-100 translate-y-0'
-                : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
-            }`}
-          >
-            <ul className="menu p-2">
-              <li><Link to="/" onClick={closeDropdown}>Home</Link></li>
-              {!user ? (
-                <>
-                  <li><Link to="/login" onClick={closeDropdown}>Login</Link></li>
-                  <li><Link to="/register" onClick={closeDropdown}>Register</Link></li>
-                </>
-              ) : (
-                <>
-                  <li><Link to="/workouttracker" onClick={closeDropdown}>Workouts</Link></li>
-                  <li><Link to="/dashboard" onClick={closeDropdown}>Dashboard</Link></li>
-                  <li><button onClick={() => { handleLogout(); closeDropdown(); }}>Logout</button></li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
-
-     
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <Link
-            to="/"
-            className="text-xl font-bold hover:text-blue-600 transition duration-200"
-          >
-            Workout App
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {user && (
-            <>
               <Avatar name={user.email} size="32" round textSizeRatio={2} />
-              <span className="hidden sm:inline text-sm font-medium">{user.email}</span>
-            </>
-          )}
-        </div>
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {avatarDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-lg z-50">
+                <ul className="p-2">
+                  <li><Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">Dashboard</Link></li>
+                  <li><Link to="/workouttracker" className="block px-4 py-2 hover:bg-gray-100">Workouts</Link></li>
+                  <li><button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button></li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
-  );
+
+  
+    {mobileMenuOpen && (
+      <div className="md:hidden mt-2 space-y-2">
+        <Link to="/" className="block px-4 py-2 hover:bg-gray-100">Home</Link>
+        {!user ? (
+          <>
+            <Link to="/login" className="block px-4 py-2 hover:bg-gray-100">Login</Link>
+            <Link to="/register" className="block px-4 py-2 hover:bg-gray-100">Register</Link>
+          </>
+        ) : (
+          <>
+            <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">Dashboard</Link>
+            <Link to="/workouttracker" className="block px-4 py-2 hover:bg-gray-100">Workouts</Link>
+            <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
+          </>
+        )}
+      </div>
+    )}
+  </nav>
+);
+
 };
 
 export default Navbar;

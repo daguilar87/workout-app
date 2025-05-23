@@ -28,7 +28,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button
+          {/* <button
             onClick={() => navigate('/login')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
           >
@@ -39,7 +39,7 @@ export default function Home() {
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
           >
             Register
-          </button>
+          </button> */}
         </motion.div>
       </motion.div>
     </div>
