@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 import WorkoutTracker from './components/WorkoutTracker'
 import Suggestions from './components/Suggestions';
+import CalendarView from './components/CalnedarView'
 
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/workouttracker" element={<WorkoutTracker />} />
         <Route path="/suggestions" element={<Suggestions />} />
+        <Route path="/calendar" element={<CalendarView />} />
+
       </Routes>
       </>
   );
