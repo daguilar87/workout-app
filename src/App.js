@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 import WorkoutTracker from './components/WorkoutTracker'
 import Suggestions from './components/Suggestions';
-import CalendarView from './components/CalnedarView'
+import CalendarView from './components/CalendarView'
 
 
 function App() {
