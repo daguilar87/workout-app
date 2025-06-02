@@ -19,6 +19,10 @@ export default function CalendarView() {
         setUserId(user.uid);
         await fetchWorkoutDates(user.uid);
         await fetchWorkoutsForDate(new Date(), user.uid);
+      } else {
+        setUserId(null);
+        setDatesWithWorkouts([]);
+        setWorkoutsForDate([]);
       }
     });
     return () => unsubscribe();
@@ -97,16 +101,28 @@ export default function CalendarView() {
         onChange={handleDateChange}
         value={selectedDate}
         tileClassName={tileClassName}
+        locale="en-US"
+        showNeighboringMonth={false}
+        formatShortWeekday={(locale, date) =>
+          date.toLocaleDateString(locale, { weekday: 'narrow' }) // single letter day header
+        }
+        className="mx-auto max-w-md"
       />
 
       <div className="mt-6">
-        <h3 className="font-semibold text-lg mb-2">
-          Workouts on {selectedDate.toDateString()}
+        <h3 className="font-semibold text-xl mb-3">
+          Workouts on{' '}
+          {selectedDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
         </h3>
         {workoutsForDate.length > 0 ? (
           <ul className="list-disc pl-5 space-y-1">
             {workoutsForDate.map((w, i) => (
-              <li key={i}>
+              <li key={w.id || i}>
                 {w.exercise} — {w.sets} sets × {w.reps} reps
               </li>
             ))}
@@ -144,10 +160,7 @@ export default function CalendarView() {
             className="input input-sm input-bordered"
           />
         </div>
-        <button
-          onClick={handleAddWorkout}
-          className="mt-3 btn btn-primary btn-sm"
-        >
+        <button onClick={handleAddWorkout} className="mt-3 btn btn-primary btn-sm">
           Add Workout
         </button>
       </div>
