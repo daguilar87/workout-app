@@ -14,10 +14,22 @@ import { onAuthStateChanged } from 'firebase/auth';
 import toast from 'react-hot-toast';
 
 export default function WorkoutTracker() {
-  const [formData, setFormData] = useState({ name: '', reps: '', sets: '', equipment: '', date: '' });
+  const [formData, setFormData] = useState({
+    name: '',
+    reps: '',
+    sets: '',
+    equipment: '',
+    date: new Date().toISOString().split('T')[0],
+  });
   const [workouts, setWorkouts] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({ name: '', reps: '', sets: '', equipment: '', date: '' });
+  const [editData, setEditData] = useState({
+    name: '',
+    reps: '',
+    sets: '',
+    equipment: '',
+    date: '',
+  });
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -49,10 +61,17 @@ export default function WorkoutTracker() {
       await addDoc(collection(db, 'workouts'), {
         ...formData,
         userId,
+        date: formData.date || new Date().toISOString().split('T')[0],
         timestamp: new Date(),
       });
       toast.success('Workout saved!');
-      setFormData({ name: '', reps: '', sets: '', equipment: '', date: '' });
+      setFormData({
+        name: '',
+        reps: '',
+        sets: '',
+        equipment: '',
+        date: new Date().toISOString().split('T')[0],
+      });
     } catch (err) {
       toast.error('Failed to save workout');
       console.error(err);
@@ -88,7 +107,10 @@ export default function WorkoutTracker() {
 
   const handleSaveEdit = async () => {
     try {
-      await updateDoc(doc(db, 'workouts', editingId), editData);
+      await updateDoc(doc(db, 'workouts', editingId), {
+        ...editData,
+        date: editData.date || new Date().toISOString().split('T')[0],
+      });
       toast.success('Workout updated!');
       setEditingId(null);
       setEditData({ name: '', reps: '', sets: '', equipment: '', date: '' });

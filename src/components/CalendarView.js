@@ -36,7 +36,20 @@ export default function CalendarView() {
     querySnapshot.forEach(doc => {
       const data = doc.data();
       if (data.date && !data.planned) {
-        dates.add(data.date);
+        let dateStr;
+
+        if (typeof data.date === 'string') {
+          dateStr = data.date;
+        } else if (data.date.toDate) {
+          // Firestore Timestamp object
+          dateStr = data.date.toDate().toISOString().split('T')[0];
+        } else if (data.date instanceof Date) {
+          dateStr = data.date.toISOString().split('T')[0];
+        }
+
+        if (dateStr) {
+          dates.add(dateStr);
+        }
       }
     });
 
@@ -71,7 +84,7 @@ export default function CalendarView() {
   };
 
   const handleAddWorkout = async () => {
-    if (!newWorkout.exercise) return;
+    if (!newWorkout.exercise || !userId) return;
 
     const dateStr = selectedDate.toISOString().split('T')[0];
     await addDoc(collection(db, 'workouts'), {
